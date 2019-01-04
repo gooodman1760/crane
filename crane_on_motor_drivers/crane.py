@@ -18,8 +18,8 @@ left_pin = 29
 right_pin = 31
 up_pin = 33
 down_pin = 35
-up_cargo_pin = 36
-down_cargo_pin = 37
+up_cargo_pin = 37
+down_cargo_pin = 38
 solenoid_pin = 40
 
 
@@ -124,10 +124,10 @@ def right_prov():
 
 def up_prov():
     global ud, ud_min, ud_max, ud_c, difference
-    if ud >= ud_min and ud < ud_max:
+    if ud_min <= ud < ud_max:
         # check of positions
         if ud == ud_c + difference:
-            upG_prov()
+            up_cargo_check()
         ud += 1
         up()
     else:
@@ -136,27 +136,26 @@ def up_prov():
 
 def down_prov():
     global ud, ud_min, ud_max
-    if ud > ud_min and ud <= ud_max:
+    if ud_min < ud <= ud_max:
         ud -= 1
         down()
     else:
         messagebox.showinfo("Cran ERROR", "Maximum is over!!!")
 
 
-
-def upG_prov():
+def up_cargo_check():
     global ud_c, ud_c_min, ud_c_max
-    if ud_c >= ud_c_min and ud_c < ud_c_max:
+    if ud_c_min <= ud_c < ud_c_max:
         ud_c += 1
         up_cargo()
     else:
         messagebox.showinfo("Cran ERROR", "Minimum is over!!!")
 
 
-def downG_prov():
+def down_cargo_check():
     global ud_c, ud_c_min, ud_c_max, ud, difference
-    if ud_c > ud_c_min and ud_c <= ud_c_max:
-        #check of positions
+    if ud_c_min < ud_c <= ud_c_max:
+        # check of positions
         if ud == ud_c + difference:
             down_prov()
         ud_c -= 1
@@ -166,19 +165,19 @@ def downG_prov():
 
 
 # return to the start position
-def returning():
+def return_to_start_position():
     global lr, lr_min, ud, ud_max, ud_c, ud_max
     solenoid_off()
-    while (lr < lr_max):
+    while lr < lr_max:
         lr += 1
         left()
         sleep(0.5)
     sleep(0.5)
-    while (ud_c < ud_c_max):
+    while ud_c < ud_c_max:
         ud_c += 1
         up_cargo()
         sleep(0.2)
-    while (ud < ud_max):
+    while ud < ud_max:
         ud += 1
         up()
         sleep(0.2)
@@ -232,9 +231,9 @@ def auto():
         elif command == "down" or command == "down\n":
             down_prov()
         elif command == "up_cargo" or command == "up_cargo\n":
-            upG_prov()
+            up_cargo_check()
         elif command == "down_cargo" or command == "down_cargo\n":
-            downG_prov()
+            down_cargo_check()
         elif command == "s_on" or command == "s_on\n":
             solenoid_on()
         elif command == "s_off" or command == "s_off\n":
@@ -276,7 +275,7 @@ def auto():
 
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
-        returning()
+        return_to_start_position()
         gpio.cleanup()
         root.destroy()
         close_web()
@@ -294,9 +293,9 @@ def run_gui():
     btn_up.grid(row=0, column=1)
     btn_down = ttk.Button(root, text='Down', command=down_prov)
     btn_down.grid(row=1, column=1)
-    btn_up_cargo = ttk.Button(root, text='UpG', command=upG_prov)
+    btn_up_cargo = ttk.Button(root, text='UpG', command=up_cargo_check)
     btn_up_cargo.grid(row=0, column=2)
-    btn_down_cargo = ttk.Button(root, text='DownG', command=downG_prov)
+    btn_down_cargo = ttk.Button(root, text='DownG', command=down_cargo_check)
     btn_down_cargo.grid(row=1, column=2)
     btn_solenoid_on = ttk.Button(root, text='Solenoid ON', command=solenoid_on)
     btn_solenoid_on.grid(row=0, column=3)
@@ -304,7 +303,7 @@ def run_gui():
     btn_solenoid_off.grid(row=1, column=3)
     btn_auto = ttk.Button(root, text='AUTO', command=auto)
     btn_auto.grid(row=0, column=4)
-    btn_auto = ttk.Button(root, text='RETURN', command=returning)
+    btn_auto = ttk.Button(root, text='RETURN', command=return_to_start_position)
     btn_auto.grid(row=1, column=4)
 
 
