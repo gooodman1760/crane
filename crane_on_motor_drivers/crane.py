@@ -103,65 +103,70 @@ def solenoid_off():
     gpio.output(solenoid_pin, 0)
 
 
-# buttons functions
-def left_prov():
+def minimum_check(val, val_min, val_max):
+    if val_min <= val < val_max:
+        val += 1
+        return True
+    else:
+        messagebox.showinfo("Crane ERROR", "Minimum is over!!!")
+        return False
+
+
+def maximum_check(val, val_min, val_max):
+    if val_min < val <= val_max:
+        val -= 1
+        return True
+    else:
+        messagebox.showinfo("Crane ERROR", "Maximum is over!!!")
+        return False
+
+
+def do_left():
     global lr, lr_min, lr_max
-    if lr >= lr_min and lr < lr_max:
+    if minimum_check(lr, lr_min, lr_max):
         lr += 1
         left()
-    else:
-        messagebox.showinfo("Cran ERROR", "Minimum is over!!!")
 
 
-def right_prov():
+def do_right():
     global lr, lr_min, lr_max
-    if lr > lr_min and lr <= lr_max:
+    if maximum_check(lr, lr_min, lr_max):
         lr -= 1
         right()
-    else:
-        messagebox.showinfo("Cran ERROR", "Maximum is over!!!")
 
 
-def up_prov():
-    global ud, ud_min, ud_max, ud_c, difference
-    if ud_min <= ud < ud_max:
-        # check of positions
+def do_up():
+    global ud, ud_min, ud_max
+    if minimum_check(ud, ud_min, ud_max):
         if ud == ud_c + difference:
-            up_cargo_check()
+            do_down()
         ud += 1
         up()
-    else:
-        messagebox.showinfo("Cran ERROR", "Minimum is over!!!")
 
 
-def down_prov():
+def do_down():
     global ud, ud_min, ud_max
-    if ud_min < ud <= ud_max:
+    if maximum_check(ud, ud_min, ud_max):
+        if ud == ud_c + difference:
+            do_down_cargo()
         ud -= 1
         down()
-    else:
-        messagebox.showinfo("Cran ERROR", "Maximum is over!!!")
 
 
-def up_cargo_check():
+def do_up_cargo():
     global ud_c, ud_c_min, ud_c_max
-    if ud_c_min <= ud_c < ud_c_max:
-        ud_c += 1
-        up_cargo()
-    else:
-        messagebox.showinfo("Cran ERROR", "Minimum is over!!!")
-
-
-def down_cargo_check():
-    global ud_c, ud_c_min, ud_c_max, ud, difference
-    if ud_c_min < ud_c <= ud_c_max:
-        # check of positions
+    if maximum_check(ud_c, ud_c_min, ud_c_max):
         if ud == ud_c + difference:
-            down_prov()
+            do_up()
+        ud_c += 1
+        down_cargo()
+
+
+def do_down_cargo():
+    global ud_c, ud_c_min, ud_c_max
+    if maximum_check(ud_c, ud_c_min, ud_c_max):
         ud_c -= 1
         down_cargo()
-    else:
-        messagebox.showinfo("Cran ERROR", "Maximum is over!!!")
 
 
 # return to the start position
@@ -223,17 +228,17 @@ def auto():
         command = commands[i]
         str(command)
         if command == "left" or command == "left\n":
-            left_prov()
+            do_left()
         elif command == "right" or command == "right\n":
-            right_prov()
+            do_right()
         elif command == "up" or command == "up\n":
-            up_prov()
+            do_up()
         elif command == "down" or command == "down\n":
-            down_prov()
+            do_down()
         elif command == "up_cargo" or command == "up_cargo\n":
-            up_cargo_check()
+            do_up_cargo()
         elif command == "down_cargo" or command == "down_cargo\n":
-            down_cargo_check()
+            do_down_cargo()
         elif command == "s_on" or command == "s_on\n":
             solenoid_on()
         elif command == "s_off" or command == "s_off\n":
@@ -285,17 +290,17 @@ def on_closing():
 # GUI
 def run_gui():
     global btn_left, btn_right, btn_up, btn_down, btn_up_cargo, btn_down_cargo, btn_solenoid_on, btn_solenoid_off
-    btn_left = ttk.Button(root, text='Left', command=left_prov)
+    btn_left = ttk.Button(root, text='Left', command=do_left)
     btn_left.grid(row=0, column=0)
-    btn_right = ttk.Button(root, text='Right', command=right_prov)
+    btn_right = ttk.Button(root, text='Right', command=do_right)
     btn_right.grid(row=1, column=0)
-    btn_up = ttk.Button(root, text='Up', command=up_prov)
+    btn_up = ttk.Button(root, text='Up', command=do_up)
     btn_up.grid(row=0, column=1)
-    btn_down = ttk.Button(root, text='Down', command=down_prov)
+    btn_down = ttk.Button(root, text='Down', command=do_down)
     btn_down.grid(row=1, column=1)
-    btn_up_cargo = ttk.Button(root, text='UpG', command=up_cargo_check)
+    btn_up_cargo = ttk.Button(root, text='Up cargo', command=do_up_cargo)
     btn_up_cargo.grid(row=0, column=2)
-    btn_down_cargo = ttk.Button(root, text='DownG', command=down_cargo_check)
+    btn_down_cargo = ttk.Button(root, text='Down cargo', command=do_down_cargo)
     btn_down_cargo.grid(row=1, column=2)
     btn_solenoid_on = ttk.Button(root, text='Solenoid ON', command=solenoid_on)
     btn_solenoid_on.grid(row=0, column=3)
