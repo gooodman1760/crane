@@ -10,10 +10,11 @@ from math import fabs
 
 from web_part import *
 
-
+# set values for GUI
 root = Tk()
 root.title("Crane")
 
+# set pins
 left_pin = 29
 right_pin = 31
 up_pin = 33
@@ -22,7 +23,7 @@ up_cargo_pin = 37
 down_cargo_pin = 38
 solenoid_pin = 40
 
-
+# prepare GPIO board
 gpio.setmode(gpio.BOARD)
 # left move
 gpio.setup(left_pin, gpio.OUT)
@@ -55,6 +56,7 @@ ud_c = 5
 ud_c_min = 1
 ud_c_max = 5
 
+# It exists for check if cargo is under the jib
 difference = fabs(ud - ud_c)
 
 
@@ -169,8 +171,10 @@ def do_down_cargo():
         down_cargo()
 
 
-# return to the start position
 def return_to_start_position():
+    """
+    Return to the start position
+    """
     global lr, lr_min, ud, ud_max, ud_c, ud_max
     solenoid_off()
     while lr < lr_max:
@@ -188,43 +192,52 @@ def return_to_start_position():
         sleep(0.2)
 
 
-def auto():
-    btn_left.config(state=DISABLED)
+def config_buttons(state_of_button):
+    """
+    Method for enable and disable buttons
+    """
+    btn_left.config(state=state_of_button)
     btn_left.grid(row=0, column=0)
-    
-    btn_right.config(state=DISABLED)
+
+    btn_right.config(state=state_of_button)
     btn_right.grid(row=1, column=0)
-    
-    btn_up.config(state=DISABLED)
+
+    btn_up.config(state=state_of_button)
     btn_up.grid(row=0, column=1)
-    
-    btn_down.config(state=DISABLED)
+
+    btn_down.config(state=state_of_button)
     btn_down.grid(row=1, column=1)
 
-    btn_up_cargo.config(state=DISABLED)
+    btn_up_cargo.config(state=state_of_button)
     btn_up_cargo.grid(row=0, column=2)
-    
-    btn_down_cargo.config(state=DISABLED)
+
+    btn_down_cargo.config(state=state_of_button)
     btn_down_cargo.grid(row=1, column=2)
-    
-    btn_solenoid_on.config(state=DISABLED)
+
+    btn_solenoid_on.config(state=state_of_button)
     btn_solenoid_on.grid(row=0, column=3)
 
-    btn_solenoid_off.config(state=DISABLED)
+    btn_solenoid_off.config(state=state_of_button)
     btn_solenoid_off.grid(row=1, column=3)
+
+
+def auto():
+    """
+    Automatic mode method
+    """
+    # disable buttons
+    state_of_button = DISABLED
+    config_buttons(state_of_button)
     
     commands = []
     file = open('auto.txt', 'r')
     for line in file:
         commands.append(line)
     file.close()
-    
-    elements = len(commands)
-    print("\nElements: ", elements)
 
     i = 0
     # sleep_time = 0
-    while i != elements:
+    while i != len(commands):
         command = commands[i]
         str(command)
         if command == "left" or command == "left\n":
@@ -253,42 +266,32 @@ def auto():
         i += 1
         sleep(0.5)
 
-    btn_left.config(state=NORMAL)
-    btn_left.grid(row=0, column=0)
-    
-    btn_right.config(state=NORMAL)
-    btn_right.grid(row=1, column=0)
-    
-    btn_up.config(state=NORMAL)
-    btn_up.grid(row=0, column=1)
-    
-    btn_down.config(state=NORMAL)
-    btn_down.grid(row=1, column=1)
-
-    btn_up_cargo.config(state=NORMAL)
-    btn_up_cargo.grid(row=0, column=2)
-    
-    btn_down_cargo.config(state=NORMAL)
-    btn_down_cargo.grid(row=1, column=2)
-    
-    btn_solenoid_on.config(state=NORMAL)
-    btn_solenoid_on.grid(row=0, column=3)
-
-    btn_solenoid_off.config(state=NORMAL)
-    btn_solenoid_off.grid(row=1, column=3)
+    # enable buttons
+    state_of_button = NORMAL
+    config_buttons(state_of_button)
 
 
 def on_closing():
+    """
+    Closing method
+    """
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
+        # model return to start position
         return_to_start_position()
+        # cleanup pins for normal work after closing program
         gpio.cleanup()
+        # close interface of managing model
         root.destroy()
+        # stop video translation
         close_web()
+        # close program window
         sys.exit()
 
 
-# GUI
 def run_gui():
+    """
+    Run GUI
+    """
     global btn_left, btn_right, btn_up, btn_down, btn_up_cargo, btn_down_cargo, btn_solenoid_on, btn_solenoid_off
     btn_left = ttk.Button(root, text='Left', command=do_left)
     btn_left.grid(row=0, column=0)
@@ -312,10 +315,12 @@ def run_gui():
     btn_auto.grid(row=1, column=4)
 
 
+# create a thread for video translation
 vid_tr = threading.Thread(target=go_web)
 vid_tr.start()
 
 run_gui()
 
+# create features for work with GUI
 root.protocol("WM_DELETE_WINDOW", on_closing)
 root.mainloop()
