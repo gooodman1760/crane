@@ -20,7 +20,7 @@ up_pin = 33
 down_pin = 35
 up_cargo_pin = 36
 down_cargo_pin = 37
-solenoid_pin = 41 ###???????
+solenoid_pin = 40
 
 
 gpio.setmode(gpio.BOARD)
