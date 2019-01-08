@@ -63,37 +63,37 @@ difference = fabs(ud - ud_c)
 # control functions
 def left():
     gpio.output(left_pin, 1)
-    sleep(0.1)	
+    sleep(0.5)
     gpio.output(left_pin, 0)
 
 
 def right():
     gpio.output(right_pin, 1)
-    sleep(0.1)	
+    sleep(0.5)
     gpio.output(right_pin, 0)
 
 
 def up():
     gpio.output(up_pin, 1)
-    sleep(0.34)
+    sleep(0.5)
     gpio.output(up_pin, 0)
 
 
 def down():
     gpio.output(down_pin, 1)
-    sleep(0.3)
+    sleep(0.5)
     gpio.output(down_pin, 0)
 
 
 def down_cargo():
     gpio.output(down_cargo_pin, 1)
-    sleep(0.3)
+    sleep(0.5)
     gpio.output(down_cargo_pin, 0)
 
 
 def up_cargo():
     gpio.output(up_cargo_pin, 1)
-    sleep(0.45)
+    sleep(0.5)
     gpio.output(up_cargo_pin, 0)
 
 
