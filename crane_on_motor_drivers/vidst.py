@@ -1,47 +1,48 @@
-import io            #provides thePythoninterfaces to stream handing
-import picamera      #camera library
-import logging       #print warning message to the console
+import io
+import picamera
+import codecs
+import logging
 import socketserver
 from threading import Condition
 from http import server
 
-PAGE="""\
-<html>
-<head>
-<title>Raspberry Pi - Crane Camera</title>
-</head>
-<body>
-<center><h1>Raspberry Pi - Crane Camera</h1></center>
-<center><img src="stream.mjpg" width="640" height="480"></center>
-</body>
-</html>
-"""
 
 class StreamingOutput(object):
     def __init__(self):
         self.frame = None
-        self.buffer = io.BytesIO()#BytesIO is a simple stream of in-memory bytes
+        # BytesIO is a simple stream of in-memory bytes
+        self.buffer = io.BytesIO()
         self.condition = Condition()
 
     def write(self, buf):
-        if buf.startswith(b'\xff\xd8'):#b'' - binary mode####
+        # b'' - binary mode####
+        if buf.startswith(b'\xff\xd8'):
             # New frame, copy the existing buffer's content and notify all
             # clients it's available
-            self.buffer.truncate()#resize stream to bytes
+            # resize stream to bytes
+            self.buffer.truncate()
             with self.condition:
-                self.frame = self.buffer.getvalue()#.getvalue() - return contents of the buffer
+                # .getvalue() - return contents of the buffer
+                self.frame = self.buffer.getvalue()
                 self.condition.notify_all()
-            self.buffer.seek(0) #hide stream content from page
-        return self.buffer.write(buf)#writes unicode string to the stream and return the the number of characters written
+            # hide stream content from page
+            self.buffer.seek(0)
+        # writes unicode string to the stream and return the the number of characters written
+        return self.buffer.write(buf)
+
 
 class StreamingHandler(server.BaseHTTPRequestHandler):
+    def get_page_text_from_file(self):
+        f = codecs.open('page.html', "r")
+        return f.read()
+
     def do_GET(self):
         if self.path == '/':
             self.send_response(301)
             self.send_header('Location', '/index.html')
             self.end_headers()
         elif self.path == '/index.html':
-            content = PAGE.encode('utf-8')
+            content = self.get_page_text_from_file()
             self.send_response(200)
             self.send_header('Content-Type', 'text/html')
             self.send_header('Content-Length', len(content))
@@ -73,9 +74,11 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.send_error(404)
             self.end_headers()
 
+
 class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
     allow_reuse_address = True
     daemon_threads = True
+
 
 with picamera.PiCamera(resolution='640x480', framerate=24) as camera:
     output = StreamingOutput()

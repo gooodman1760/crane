@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Raspberry Pi - Crane Camera</title>
+    <style>
+        body{
+            background: linear-gradient(to right, #FFFFFF, #6DD5FA, #2980B1);
+        }
+        .project_title{
+            text-align: center;
+            font: 30px Estrangelo Edessa, sans-serif;
+            font-weight: bold;
+            margin: 15px;
+        }
+        .buttons{
+            display: flex;
+		    flex-direction: row;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        .buttons > div{
+            display: flex;
+		    flex-direction: column;
+        }
+        .buttons > div > div{
+            display: flex;
+		    flex-direction: row;
+            margin-right: 30px;
+            background-color: #16CEFF;
+        }
+        .buttons > div > div > div{
+            display: flex;
+		    flex-direction: column;
+        }
+        button{
+            font: 25px Estrangelo Edessa, sans-serif;
+            background-color: aliceblue;
+            margin: 5px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        button:hover, button:active{
+            background-color: #C3F1F9;
+        }
+        img{
+            border-style: solid;
+        }
+        .exit_button{
+            font: 30px Estrangelo Edessa, sans-serif;
+            background-color: #FF593B;
+            margin: 10px;
+            padding: 10px;
+            width: 400px;
+            border-radius: 5px;
+        }
+        .exit_button:hover, .exit_button:active{
+            background-color: #FF883B;
+        }
+    </style>
+</head>
+
+<body>
+    <p class="project_title">Raspberry Pi - Crane Camera</p>
+    <center><img src="stream.mjpg" width="640" height="480"></center>
+    <div class="buttons">
+        <div>
+            <div>
+                <button type="button" onclick="alert('Left')">Left</button>
+            <div>
+                <button type="button" onclick="alert('Up')">Up</button>
+                <button type="button" onclick="alert('Down')">Down</button>
+            </div>
+                <button type="button" onclick="alert('Right')">Right</button>
+            </div>
+        </div>
+    </div>
+    <div class="buttons">
+        <div>
+            <button type="button" onclick="alert('Up Cargo')">Up Cargo</button>
+            <button type="button" onclick="alert('Down Cargo')">Down Cargo</button>
+        </div>
+        <div>
+            <button type="button" onclick="alert('Solenoid ON')">Solenoid ON</button>
+            <button type="button" onclick="alert('Solenoid OFF')">Solenoid OFF</button>
+        </div>
+        <div>
+            <button type="button" onclick="alert('AUTO')">AUTO</button>
+            <button type="button" onclick="alert('RETURN')">RETURN</button>
+        </div>
+    </div>
+    <center><button class="exit_button" onclick="alert('Exit')">Exit</button></center>
+</body>
+</html>
