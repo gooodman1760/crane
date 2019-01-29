@@ -2,7 +2,7 @@ import RPi.GPIO as gpio
 from time import sleep
 
 from const_module import const_pin, const_position
-from controls import Controls
+from controllers.controls import Controls
 
 
 class ControlsLR(Controls):
@@ -30,3 +30,10 @@ class ControlsLR(Controls):
         if self.maximum_check(const_position.LR, self.lr_min, self.lr_max):
             const_position.LR -= 1
             self.right()
+
+    def return_to_start_position(self):
+        while const_position.LR < self.lr_max:
+            const_position.LR += 1
+            self.left()
+            sleep(0.5)
+        sleep(0.5)

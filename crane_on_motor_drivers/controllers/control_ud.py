@@ -2,13 +2,16 @@ import RPi.GPIO as gpio
 from time import sleep
 
 from const_module import const_pin, const_position
-from controls import Controls
+from controllers.controls import Controls
+from controllers.control_ud_c import ControlsUDC
 
 
 class ControlsUD(Controls):
     # ud it's up_down
     ud_min = 1
     ud_max = 7
+
+    do_down_cargo = ControlsUDC.do_down_cargo
 
     def up(self):
         gpio.output(const_pin.UP_PIN, 1)
@@ -33,4 +36,10 @@ class ControlsUD(Controls):
                 self.do_down_cargo()
             const_position.UD -= 1
             self.down()
+
+    def return_to_start_position(self):
+        while const_position.UD < self.ud_max:
+            const_position.UD += 1
+            self.up()
+            sleep(0.2)
 

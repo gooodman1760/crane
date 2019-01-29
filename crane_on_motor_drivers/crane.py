@@ -5,23 +5,39 @@ import sys
 from tkinter import messagebox
 
 from web_part import *
-from controls import Controls
+from controllers.controls import Controls
+from controllers.auto_control import AutoControl
+from controllers.control_lr import ControlsLR
+from controllers.control_ud import ControlsUD
+from controllers.control_ud_c import ControlsUDC
+from controllers.control_solenoid import ControlSolenoid
 
 
 class Crane:
     controls = Controls()
+    auto_control = AutoControl()
+    controls_solenoid = ControlSolenoid()
+    controls_lr = ControlsLR()
+    controls_ud = ControlsUD()
+    controls_ud_c = ControlsUDC()
     root = Tk()
 
-    btn_left = ttk.Button(root, text='Left', command=Controls().do_left())
-    btn_right = ttk.Button(root, text='Right', command=Controls().do_right())
-    btn_up = ttk.Button(root, text='Up', command=Controls().do_up())
-    btn_down = ttk.Button(root, text='Down', command=Controls().do_down())
-    btn_up_cargo = ttk.Button(root, text='Up cargo', command=Controls().do_up_cargo())
-    btn_down_cargo = ttk.Button(root, text='Down cargo', command=Controls().do_down_cargo())
-    btn_solenoid_on = ttk.Button(root, text='Solenoid ON', command=Controls().solenoid_on())
-    btn_solenoid_off = ttk.Button(root, text='Solenoid OFF', command=Controls().solenoid_off())
-    btn_auto = ttk.Button(root, text='AUTO', command=Controls().auto_control())
-    btn_return = ttk.Button(root, text='RETURN', command=Controls().return_to_start_position())
+    t_of_return_to_start_position_methods = (controls_solenoid.return_to_start_position,
+                                             controls_ud_c.return_to_start_position(),
+                                             controls_ud.return_to_start_position(),
+                                             controls_lr.return_to_start_position())
+
+    def __init__(self):
+        self.btn_left = ttk.Button(self.root, text='Left', command=self.controls_lr.do_left())
+        self.btn_right = ttk.Button(self.root, text='Right', command=self.controls_lr.do_right())
+        self.btn_up = ttk.Button(self.root, text='Up', command=self.controls_ud.do_up())
+        self.btn_down = ttk.Button(self.root, text='Down', command=self.controls_ud.do_down())
+        self.btn_up_cargo = ttk.Button(self.root, text='Up cargo', command=self.controls_ud_c.do_up_cargo())
+        self.btn_down_cargo = ttk.Button(self.root, text='Down cargo', command=self.controls_ud_c.do_down_cargo())
+        self.btn_solenoid_on = ttk.Button(self.root, text='Solenoid ON', command=self.controls_solenoid.solenoid_on())
+        self.btn_solenoid_off = ttk.Button(self.root, text='Solenoid OFF', command=self.controls_solenoid.solenoid_off())
+        self.btn_auto = ttk.Button(self.root, text='AUTO', command=self.auto_control.auto_control())
+        self.btn_return = ttk.Button(self.root, text='RETURN', command=self.t_of_return_to_start_position_methods)
 
     def config_buttons(self, state_of_button):
         """
@@ -71,8 +87,10 @@ class Crane:
         """
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
             # model return to start position
-
-            self.controls.return_to_start_position()
+            self.controls_solenoid.return_to_start_position()
+            self.controls_lr.return_to_start_position()
+            self.controls_ud_c.return_to_start_position()
+            self.controls_ud.return_to_start_position()
             # cleanup pins for normal work after closing program
             self.controls.cleanup_board()
             # close interface of managing model
@@ -104,4 +122,6 @@ class Crane:
         vid_tr.start()
 
 
-Crane().run_gui()
+if __name__ == "__main__":
+    crane = Crane()
+    crane.run_gui()
