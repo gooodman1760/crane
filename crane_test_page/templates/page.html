@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Raspberry Pi - Crane Camera</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <p class="project_title">Raspberry Pi - Crane Camera</p>
+    <div class="video_and_buttons_container">
+        <div>
+            <img src="stream.mjpg" width="640" height="480">
+        </div>
+        <div>
+            <div class="buttons">
+                <div>
+                    <div>
+                        <button type="button" id="left_button">Left</button>
+                    <div>
+                        <button type="button" id="up_button">Up</button>
+                        <button type="button" id="down_button">Down</button>
+                    </div>
+                        <button type="button" id="right_button">Right</button>
+                    </div>
+                </div>
+            </div>
+            <div class="buttons">
+                <div>
+                    <button type="button" id="up_cargo_button">Up Cargo</button>
+                    <button type="button" id="down_cargo_button">Down Cargo</button>
+                </div>
+                <div>
+                    <button type="button" id="solenoid_on_button">Solenoid ON</button>
+                    <button type="button" id="solenoid_off_button">Solenoid OFF</button>
+                </div>
+                <div>
+                    <button type="button" id="auto_button">AUTO</button>
+                    <button type="button" id="return_button">RETURN</button>
+                </div>
+            </div>
+            <center><button class="exit_button" id="exit_button">Exit</button></center>
+            <center><span id=result>Some result</span></center>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="buttons_handler.js"></script>
+</body>
+</html>
